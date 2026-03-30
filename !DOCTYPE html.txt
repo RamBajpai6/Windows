@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>My Web Server Application</title>
+<style>
+body {
+background-color: lightyellow;
+text-align: center;
+}
+h1 {
+font-size: 32px;
+font-weight: bold;
+}
+p {
+font-size: 18px;
+}
+</style>
+</head>
+<body>
+<h1>MY WEB SERVER Application</h1>
+<p>Current Date: <span id="currentDate"></span></p>
+<p>IP Address: <span id="ipAddress"></span></p>
+<script>
+// Get the current date
+var currentDate = new Date().toLocaleDateString();
+document.getElementById("currentDate").textContent = currentDate;
+// Fetch the IP address
+fetch('https://api.ipify.org/?format=json')
+.then(response => response.json())
+.then(data => {
+document.getElementById("ipAddress").textContent = data.ip;
+})
+.catch(error => {
+console.log('Error:', error);
+document.getElementById("ipAddress").textContent = 'Unable to fetch IP address';
+});
+</script>
+</body>
+</html>
+
+Index.html
+
+networking

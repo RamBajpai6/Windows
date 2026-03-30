@@ -1,0 +1,127 @@
+ssh-keygen -t rsa -b 4096
+
+stages:
+  - build
+  - test
+  - deploy
+
+build_job:
+  stage: build
+  script:
+    - echo "Building the project"
+
+test_job:
+  stage: test
+  script:
+    - echo "Running tests"
+
+deploy_job:
+  stage: deploy
+  script:
+    - echo "Deploying application"
+
+
+self-manage runner in GitLab with AWS
+
+curl -L https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh | sudo bash
+sudo yum install gitlab-runner -y
+
+web server lunch with ymlfile via gitbash
+git config --global init.defaultBranch main
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Sample Page</title>
+<link href="styles.css" rel="stylesheet">
+</head>
+
+<body>
+<h1 class="title">My Website</h1>
+
+<img src="image.jpg" alt="Description of the image">
+
+<p class="centered">This text is centered.</p>
+
+<p style="color: red; font-size: 1.5em;">
+Red text in a larger font.
+</p>
+
+</body>
+</html>
+
+
+image: node:latest
+
+stages:
+  - test
+
+test-job:
+  stage: test
+  script:
+    - npm install -g html-validator-cli
+    - html-validator --file=index.html --verbose
+  only:
+    - main
+
+after ci to CD
+
+image: node:latest
+
+stages:
+  - test
+  - deploy
+
+test-job:
+  stage: test
+  script:
+    - npm install -g html-validator-cli
+    - html-validator --file=index.html --verbose
+  only:
+    - main
+
+variables:
+  SSH_PRIVATE_KEY: "$SSH_PRIVATE_KEY"
+
+before_script:
+  - apt-get update -y && apt-get install -y openssh-client
+  - mkdir -p ~/.ssh
+  - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+  - chmod 400 ~/.ssh/id_rsa
+
+deploy_to_server:
+  stage: deploy
+  script:
+    - scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no index.html ec2-user@<EC2-PublicIP>:/var/www/html/
+  only:
+    - main
+
+correct pipeline 
+
+image: node:latest
+
+stages:
+  - test
+  - deploy
+
+test-job:
+  stage: test
+  script:
+    - echo "Skipping HTML validation (W3C blocked in CI)"
+  only:
+    - main
+
+before_script:
+  - apt-get update -y && apt-get install -y openssh-client
+  - mkdir -p ~/.ssh
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+  - chmod 400 ~/.ssh/id_rsa
+  - ssh-keyscan -H 13.234.202.227 >> ~/.ssh/known_hosts
+
+deploy_to_server:
+  stage: deploy
+  script:
+    - scp -i ~/.ssh/id_rsa index.html ec2-user@13.234.202.227:/var/www/html/
+  only:
+    - main
