@@ -1,0 +1,29 @@
+image: node:latest
+
+stages:
+  - deploy_staging
+  - deploy_production
+
+variables:
+  SSH_PRIVATE_KEY: "$SSH_PRIVATE_KEY"
+
+before_script:
+  - apt-get update -y && apt-get install -y openssh-client
+  - mkdir -p ~/.ssh
+  - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+  - chmod 400 ~/.ssh/id_rsa
+
+deploy_to_staging:
+  stage: deploy_staging
+  script:
+    - scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no index.html ec2-user@65.0.29.108:/var/www/html/
+  only:
+    - main
+
+deploy_to_production:
+  stage: deploy_production
+  script:
+    - scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no index.html ec2-user@3.109.144.125:/var/www/html/
+  when: manual
+  only:
+    - main
