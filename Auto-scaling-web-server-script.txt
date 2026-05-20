@@ -1,0 +1,31 @@
+#!/bin/bash
+yum update -y
+yum install -y httpd
+
+# Start and enable Apache
+systemctl start httpd
+systemctl enable httpd
+
+# Get Instance Metadata
+INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+AZ=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)
+PRIVATE_IP=$(hostname -I)
+
+# Create unique web page
+cat <<EOF > /var/www/html/index.html
+<html>
+<head>
+<title>Auto Scaling Web Server</title>
+</head>
+<body style="font-family: Arial;">
+<h1>Web Server Running</h1>
+<p><b>Instance ID:</b> $INSTANCE_ID</p>
+<p><b>Availability Zone:</b> $AZ</p>
+<p><b>Private IP:</b> $PRIVATE_IP</p>
+<p><b>Status:</b> Healthy</p>
+</body>
+</html>
+EOF
+
+# Permissions
+chmod 644 /var/www/html/index.html
